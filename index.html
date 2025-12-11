@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Romantic Mini-Game — Surat Kejutan</title>
+  <style>
+    :root {
+      --bg: #ffff;
+      --accent: #c8e6c5;
+      --accent-2: #ffd9e8;
+      --paper: #fffbea;
+      --love: #a21111;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    body {
+      background: linear-gradient(180deg, #ffff 0%, #c8e6c5 35%, #ffd9e8 70%, #f6f6f6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .stage {
+      width: 100%;
+      max-width: 900px;
+      height: 640px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(200,230,197,0.7));
+      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      border-radius: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    header {
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    h1 { font-size: 18px; margin: 0; color: #4a4a4a; }
+    .help { font-size: 13px; color: #555; }
+    .game-area {
+      position: absolute;
+      inset: 70px 20px 120px 20px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    .playground {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .scoreboard {
+      position: absolute;
+      left: 16px;
+      top: 12px;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(6px);
+      padding: 8px 12px;
+      border-radius: 999px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .scoreboard .dot {
+      width: 12px; height: 12px;
+      border-radius: 50%; background: var(--accent);
+    }
+    .timer { font-weight: 600; color: #333; }
+    .heart {
+      position: absolute;
+      width: 52px; height: 52px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-origin: center center;
+    }
+    .heart svg {
+      width: 100%; height: 100%;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.14));
+      fill: var(--love);
+    }
+
+    /* --- Amplop --- */
+    .envelope {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 340px;
+      height: 220px;
+      background: #fffef8;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      transition: transform .6s ease;
+    }
+    .envelope.show { transform: translate(-50%, -50%) scale(1); }
+    .envelope .flap {
+      position: absolute;
+      top: -1px; left: 0; right: 0;
+      height: 90px;
+      background: #fffcea; 
+      clip-path: polygon(0 0, 50% 100%, 100% 0);
+    }
+    .envelope .heart-btn {
+      font-size: 36px;
+      color: var(--love);
+      z-index: 2;
+      cursor: pointer;
+    }
+    .letter {
+      position: absolute;
+      width: 420px;
+      max-height: 70vh;
+      background: var(--paper);
+      top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      opacity: 0;
+      transition: all .6s ease;
+      padding: 20px;
+      overflow-y: auto;
+      text-align: justify;
+      line-height: 1.5em;
+      font-size: 15px;
+    }
+    
+    /* Mobile responsive untuk letter saja */
+    @media (max-width: 768px) {
+      .letter {
+        width: calc(100vw - 50px);
+        max-width: 340px;
+        max-height: 55vh;
+        padding: 16px;
+        font-size: 13px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .letter {
+        width: calc(100vw - 40px);
+        max-width: 310px;
+        max-height: 50vh;
+        padding: 14px;
+        font-size: 12px;
+      }
+    }
+    
+    @media (max-width: 360px) {
+      .letter {
+        width: calc(100vw - 30px);
+        max-width: 290px;
+        padding: 12px;
+        font-size: 11px;
+      }
+    }
+    
+    .envelope.open .letter {
+      top: -120px;
+      opacity: 1;
+    }
+    .glow {
+      animation: glow 1.2s infinite alternate;
+    }
+    @keyframes glow {
+      from { box-shadow: 0 0 10px rgba(255,255,0,0.5); }
+      to { box-shadow: 0 0 25px rgba(255,255,0,1); }
+    }
+
+    footer {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      padding: 12px 18px; display: flex;
+      align-items: center; justify-content: space-between;
+    }
+    .instruction { font-size: 13px; color: #333; }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <header>
+      <h1>Mini Game For mba PeiPei</h1>
+      <span class="help">Kumpulkan hati untuk membuka surat</span>
+    </header>
+    <div class="game-area">
+      <div class="playground" id="playground"></div>
+      <div class="scoreboard"><div class="dot"></div><span id="score">0</span> / 10 <span class="timer" id="timer">25</span></div>
+    </div>
+
+    <!-- Amplop -->
+    <div class="envelope" id="envelope">
+      <div class="flap"></div>
+      <div class="heart-btn" id="openBtn">❤</div>
+      <div class="letter" id="letter">
+        <h3>✨ FROM MENTERI RISKEL ✨</h3>
+        <p>
+          Pesan alay ini ditujukan khusus buat mba peipei selaku menteri kita yang terbaik yang tertop
+          Walaupun ini blm demis tpi terimakasi ya mba pei atas semuaaa sisi positif, dorongan positif yang ga akan bisa kita sebutin
+          bisa kita sebutin 1/1 karena mba peipei udh banyak ngasi energi baik buat kitaa semua di riskel, serius mba pei keren 
+          banget bisa merealisasikan RISKEL BERDAMPAK ituu aaaminnn❤️ -RisetKeilmuan2025
+        </p>
+        <p>
+          Gatau mau berapa banyak kata alay yang kami ucapkan tpi dr kita semua 
+          sayang mba peipei, gamau pisah sm mba peipei, tp mba peipei sukses terus yaaa 
+          semoga dilancarkan semua jalan mba peipei , termasuk dapat cemcem an yg sesuai keinginan mba pei❤️
+        </p>
+      </div>
+    </div>
+
+    <footer>
+      <div class="instruction">Klik hati yang muncul sebelum waktunya habis!</div>
+    </footer>
+  </div>
+
+  <!-- AUDIO -->
+  <audio id="bgm" src="aldi.mp3"></audio>
+
+  <script>
+    const playground = document.getElementById('playground');
+    const scoreEl = document.getElementById('score');
+    const timerEl = document.getElementById('timer');
+    const envelope = document.getElementById('envelope');
+    const letter = document.getElementById('letter');
+    const bgm = document.getElementById('bgm');
+
+    let score = 0;
+    let timeLeft = 25;
+    let gameInterval, timerInterval;
+
+    function spawnHeart(){
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41 1.01 4.13 2.44h.74C14.09 5.01 15.76 4 17.5 4 20 4 22 6 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+      heart.style.left = Math.random() * (playground.clientWidth - 52) + 'px';
+      heart.style.top = Math.random() * (playground.clientHeight - 52) + 'px';
+      heart.onclick = () => {
+        score++;
+        scoreEl.textContent = score;
+        heart.remove();
+        if(score >= 10){ endGame(); }
+      };
+      playground.appendChild(heart);
+      setTimeout(()=> heart.remove(), 1500);
+    }
+
+    function startGame(){
+      gameInterval = setInterval(spawnHeart, 800);
+      timerInterval = setInterval(()=>{
+        timeLeft--;
+        timerEl.textContent = timeLeft;
+        if(timeLeft <= 0){ endGame(); }
+      },1000);
+    }
+
+    function endGame(){
+      clearInterval(gameInterval);
+      clearInterval(timerInterval);
+      playground.innerHTML = '';
+      if(score >= 10){
+        envelope.classList.add('show');
+        const openBtn = document.getElementById('openBtn');
+        openBtn.onclick = ()=> {
+          envelope.classList.toggle('open');
+          letter.classList.toggle('glow');
+          // Hide heart button when letter is opened
+          if(envelope.classList.contains('open')) {
+            openBtn.style.display = 'none';
+          } else {
+            openBtn.style.display = 'flex';
+          }
+          // Play lagu saat surat terbuka
+          bgm.play();
+        }
+      } else {
+        alert('Sayang sekali, coba lagi ya!');
+        location.reload();
+      }
+    }
+    startGame();
+  </script>
+</body>
+</html>
